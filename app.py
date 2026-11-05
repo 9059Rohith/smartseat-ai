@@ -21,6 +21,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from store import Conflict, Missing, Store
 from vision import Cameras
 from operational import operations_status
+from media_analysis import MAX_REQUEST, MediaJobs, decode_frame
 
 ROOT = Path(__file__).resolve().parent
 COOKIE = "smartseat_session"
@@ -140,6 +141,7 @@ def seed_demo(store):
 def create_app(database, *, demo=False, greeting_seconds=None, webcam=False,public_hosts=None,public_origins=None,operations_dir=None):
     store = Store(database, greet=greeting_seconds or (5 if demo else 300))
     cameras = Cameras(store)
+    media = MediaJobs(cameras.get_detector)
     attempts = {}
     if demo:
         seed_demo(store)
@@ -164,6 +166,7 @@ def create_app(database, *, demo=False, greeting_seconds=None, webcam=False,publ
             with suppress(asyncio.CancelledError):
                 await task
             await asyncio.to_thread(cameras.shutdown)
+            media.close()
 
     app = FastAPI(title="SmartSeat AI", docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
     hosts=public_hosts if public_hosts is not None else [value for value in os.environ.get('SMARTSEAT_PUBLIC_HOSTS','').split(',') if value]
@@ -174,6 +177,7 @@ def create_app(database, *, demo=False, greeting_seconds=None, webcam=False,publ
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost",*hosts])
     app.state.store = store
     app.state.cameras = cameras
+    app.state.media = media
 
     @app.middleware("http")
     async def protect(request, call_next):
@@ -187,7 +191,7 @@ def create_app(database, *, demo=False, greeting_seconds=None, webcam=False,publ
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; "
-            "connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+            "media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
         if request.url.path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
         return response
@@ -228,6 +232,32 @@ def create_app(database, *, demo=False, greeting_seconds=None, webcam=False,publ
     @app.get('/api/operations')
     def operation_status(_=Depends(manager)):
         return operations_status(store,operations_dir or ROOT/'local')
+
+    @app.post('/api/media/analyze',status_code=202)
+    async def media_analyze(request: Request,session=Depends(user)):
+        if request.headers.get('content-type','').split(';')[0]!='application/json':
+            raise HTTPException(415,'Send a JPEG frame as JSON.')
+        data=bytearray()
+        async for chunk in request.stream():
+            if len(data)+len(chunk)>MAX_REQUEST:raise HTTPException(413,'This frame is too large.')
+            data.extend(chunk)
+        try:
+            body=json.loads(data)
+            if not isinstance(body,dict) or set(body)-{'image','broad','frame_time'}:raise ValueError()
+            broad=body.get('broad',False);at=body.get('frame_time',0)
+            if type(broad) is not bool or type(at) not in (int,float) or not 0<=at<=86400:raise ValueError()
+        except (ValueError,TypeError):raise HTTPException(422,'Invalid media analysis request.') from None
+        frame=await asyncio.to_thread(decode_frame,body.get('image'))
+        return media.submit(session['name'],frame,broad=broad,frame_time=at)
+
+    @app.get('/api/media/jobs/{job}')
+    def media_job(job: str,session=Depends(user)):
+        return media.get(job,session['name'])
+
+    @app.delete('/api/media/jobs/{job}')
+    def media_delete(job: str,session=Depends(user)):
+        media.delete(job,session['name'])
+        return {'ok':True}
 
     @app.post("/api/login")
     async def login(body: Login, request: Request, response: Response):

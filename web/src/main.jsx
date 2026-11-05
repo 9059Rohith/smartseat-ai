@@ -8,8 +8,9 @@ import './style.css'
 import './cinematic.css'
 import { AnimatedTitle, Atmosphere, MotionControls, useAtmosphere } from './atmosphere'
 import { Account, CloudLogin } from './account'
+import { MediaAnalysis } from './media-analysis'
 
-const nav = [['Floor','floor'], ['Waitlist','people'], ['Reservations','calendar'], ['Analytics','analytics'], ['Cameras','camera']]
+const nav = [['Floor','floor'], ['Waitlist','people'], ['Reservations','calendar'], ['Analytics','analytics'], ['Cameras','camera'], ['Media Analysis','media']]
 
 function Login({ demo, onLogin, engineError }) {
   const [error, setError] = useState('')
@@ -128,10 +129,11 @@ function App() {
     </aside>
     <main className="workspace">
       <header className="workspace-head"><div><AnimatedTitle key={tab}>{pageTitle}</AnimatedTitle>
-        <p className="subtitle"><i className={'dot ' + (camera?.status === 'live' ? '' : 'neutral')}/>{camera ? camera.name + ' · ' + cameraLabels[camera.status] : 'Restaurant workspace'}{demo && <span className="demo-label">Sample workspace</span>}</p></div>
-        <div className="header-actions"><MotionControls {...atmosphere}/>{tab!=='Account'&&(tab === 'Reservations' ? <Button disabled={user.cloud&&!connection} variant="primary" icon="plus" onClick={() => open('reservation')}>New reservation</Button> : <Button disabled={user.cloud&&!connection} variant="primary" icon="plus" onClick={() => open('party')}>Add party</Button>)}</div></header>
+        <p className="subtitle"><i className={'dot ' + (camera?.status === 'live' ? '' : 'neutral')}/>{tab==='Media Analysis'?'Uploaded images & videos · local inference':camera ? camera.name + ' · ' + cameraLabels[camera.status] : 'Restaurant workspace'}{demo && <span className="demo-label">Sample workspace</span>}</p></div>
+        <div className="header-actions"><MotionControls {...atmosphere}/>{!['Account','Media Analysis'].includes(tab)&&(tab === 'Reservations' ? <Button disabled={user.cloud&&!connection} variant="primary" icon="plus" onClick={() => open('reservation')}>New reservation</Button> : <Button disabled={user.cloud&&!connection} variant="primary" icon="plus" onClick={() => open('party')}>Add party</Button>)}</div></header>
       {!connection && state && <div className="connection" role="status">{user.cloud?'Restaurant computer is disconnected. '+(state.cloud_saved_at?'Showing saved records from '+new Date(state.cloud_saved_at).toLocaleString()+'.':'Connect your restaurant to start collecting real data.'):'Reconnecting to SmartSeat. The floor shows the last update.'}{user.cloud&&<Button onClick={()=>navigate('Account')}>Open Account</Button>}</div>}
       {user.cloud&&tab==='Account'&&<Account user={user} onUser={setUser}/>}
+      {tab==='Media Analysis'&&<MediaAnalysis available={!user.cloud||connection} onAccount={()=>navigate('Account')}/>}
       {!state && <p className="muted">{loadingError || 'Connecting to the restaurant workspace…'}</p>}
       {state && tab === 'Floor' && <Floor state={state} camera={camera} setCamera={setCamera} act={act} manager={manager} navigate={navigate} chooseParty={chooseParty} mapTable={item => open('table', undefined, { camera: camera.id, zone: item.zone })}/>}
       {state && tab === 'Waitlist' && <Waitlist state={state} act={act} chooseParty={chooseParty}/>}

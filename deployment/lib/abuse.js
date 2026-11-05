@@ -4,6 +4,7 @@ const POLICIES = {
   'auth/sign-in': [10, 300000], 'auth/sign-up': [3, 600000],
   'auth/forgot-password': [3, 1800000], 'auth/connect-engine': [8, 300000],
   'auth/google': [20, 60000],
+  'media/analyze': [90, 60000],
 };
 
 function createGuard({clock=Date.now,maxBuckets=3000,trustProxy=process.env.VERCEL==='1',log=console.warn}={}) {
@@ -26,11 +27,12 @@ function createGuard({clock=Date.now,maxBuckets=3000,trustProxy=process.env.VERC
   }
   return (req,route)=>{
     const declared=req.headers['content-length'];
+    const maximum=route==='media/analyze'&&req.method==='POST'?1048576:65536;
     if(declared&&(!/^\d+$/.test(String(declared))))return {status:400,detail:'Invalid request length.'};
-    if(Number(declared)>65536)return {status:413,detail:'This request is too large.'};
+    if(Number(declared)>maximum)return {status:413,detail:'This request is too large.'};
     if(req.body!==undefined){
       const body=typeof req.body==='string'||Buffer.isBuffer(req.body)?req.body:JSON.stringify(req.body);
-      if(Buffer.byteLength(body)>65536)return {status:413,detail:'This request is too large.'};
+      if(Buffer.byteLength(body)>maximum)return {status:413,detail:'This request is too large.'};
     }
     const forwarded=trustProxy?req.headers['x-forwarded-for']:null;
     const identity=typeof forwarded==='string'?forwarded.split(',')[0].trim():req.socket?.remoteAddress||'unknown';

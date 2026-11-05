@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react'
 
 const shapes = {
+  media: <><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 6-6 4 4 3-3 5 5"/></>,
   chair: <><path d="M6 13V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v7M4 14h16v3H4zM6 17v4m12-4v4"/></>,
   floor: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
   people: <><circle cx="9" cy="7" r="3"/><path d="M3 20v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3m2-16a3 3 0 0 1 0 6m2 3a4 4 0 0 1 3 4v3"/></>,

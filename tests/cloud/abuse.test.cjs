@@ -29,3 +29,12 @@ test('saturated memory does not evict a blocked identity to let it bypass limits
   assert.equal(guard(request('second'),'auth/sign-in').status,429);
   assert.equal(guard(request('first'),'auth/sign-in').status,429);
 });
+
+test('only exact media frame route gets a bounded 1 MiB allowance',()=>{
+  const guard=createGuard({log:()=>{}});const req=request();req.body={image:'a'.repeat(100000)};
+  assert.equal(guard(req,'media/analyze'),null);
+  assert.equal(guard(req,'queue').status,413);
+  assert.equal(guard(req,'media/analyze/extra').status,413);
+  req.body={image:'a'.repeat(1048576)};
+  assert.equal(guard(req,'media/analyze').status,413);
+});

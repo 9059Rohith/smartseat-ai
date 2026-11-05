@@ -2,7 +2,7 @@
 
 **A camera-assisted restaurant floor, service and owner reporting web application.**
 
-[Open the live application](https://smartseat-ai-9059.vercel.app/) · [Watch the 2:33 walkthrough](https://9059rohith.github.io/smartseat-ai/) · [Download MP4](https://github.com/9059Rohith/smartseat-ai/releases/download/v1.0-demo/smartseat-demo.mp4) · [Release checklist](docs/TOP_QUALITY_CHECKLIST.md) · [Deployment guide](docs/public-deployment.md)
+[Open the live application](https://smartseat-ai-9059.vercel.app/) Â· [Watch the 2:33 walkthrough](https://9059rohith.github.io/smartseat-ai/) Â· [Download MP4](https://github.com/9059Rohith/smartseat-ai/releases/download/v1.0-demo/smartseat-demo.mp4) Â· [Release checklist](docs/TOP_QUALITY_CHECKLIST.md) Â· [Deployment guide](docs/public-deployment.md)
 
 [![SmartSeat production application walkthrough](docs/media/demo-poster.jpg)](https://9059rohith.github.io/smartseat-ai/)
 
@@ -19,6 +19,7 @@
 
 - [Demo and what it proves](#demo-and-what-it-proves)
 - [Features](#features)
+- [Uploaded image and video analysis](#uploaded-image-and-video-analysis)
 - [How table detection works](#how-table-detection-works)
 - [Occupancy and cleaning](#occupancy-and-cleaning)
 - [Architecture](#architecture)
@@ -37,19 +38,19 @@
 
 ## Demo and what it proves
 
-**[Full MP4 walkthrough — approximately 2 minutes 33 seconds](https://github.com/9059Rohith/smartseat-ai/releases/download/v1.0-demo/smartseat-demo.mp4)**
+**[Full MP4 walkthrough â€” approximately 2 minutes 33 seconds](https://github.com/9059Rohith/smartseat-ai/releases/download/v1.0-demo/smartseat-demo.mp4)**
 
 The recording is a browser screencast of [the production deployment](https://smartseat-ai-9059.vercel.app/), captured on 5 November 2026. The screen capture samples approximately two frames per second and is encoded as a standard H.264 MP4. Chapter labels sit below the application; they do not replace application data. There is no synthetic voiceover, fabricated dashboard or seeded restaurant history.
 
 | Approximate time | Shown in the actual application |
 | --- | --- |
-| 0:00–0:25 | Floor, camera health, real empty workspace and mapped-table counters |
-| 0:25–0:38 | Guest entry form, opened and cancelled without submitting invented guests |
-| 0:38–0:56 | Reservations and booking prerequisites |
-| 0:56–1:25 | Actual day-to-day/weekend reports and CSV export availability |
-| 1:25–1:47 | Laptop source and table-zone setup; no fictional polygon or capacity saved |
-| 1:47–2:13 | Actual monitor warning, encrypted backup, restore evidence and retention preview |
-| 2:13–2:33 | Floor and secure signed-out screen with Google sign-in |
+| 0:00â€“0:25 | Floor, camera health, real empty workspace and mapped-table counters |
+| 0:25â€“0:38 | Guest entry form, opened and cancelled without submitting invented guests |
+| 0:38â€“0:56 | Reservations and booking prerequisites |
+| 0:56â€“1:25 | Actual day-to-day/weekend reports and CSV export availability |
+| 1:25â€“1:47 | Laptop source and table-zone setup; no fictional polygon or capacity saved |
+| 1:47â€“2:13 | Actual monitor warning, encrypted backup, restore evidence and retention preview |
+| 2:13â€“2:33 | Floor and secure signed-out screen with Google sign-in |
 
 The camera's blocked-view warning and zero history are intentional, truthful observations. The recording is a product walkthrough, **not** a restaurant field-accuracy benchmark. Google OAuth was exercised again after recording and the existing restaurant connection restored. Account chooser details and credentials are excluded from the published video.
 
@@ -63,6 +64,7 @@ See [demo provenance and chapter notes](docs/demo.md).
 | --- | --- |
 | Live floor | Authenticated camera preview; real person, table-candidate and chair counts; explicit fresh/stale/blocked/offline states |
 | Table setup | Review detected proposals, enter real names/capacities, draw table-and-chair polygons, select camera and automatic/manual updates |
+| Media Analysis | Separate image/video upload workspace, real colored table outlines, one frame-statistics bar, sampled video review and annotated-frame/CSV downloads |
 | Occupancy | Sustained visible presence/absence against configured zones; visit lifecycle and unknown/stale evidence handling |
 | Service | Greeting deadlines, departure/cleaning workflow and staff-confirmed cleaning |
 | Visual surface checks | Supported dining-item detection; items remain, looks clear, in use or unverified suggestions |
@@ -76,6 +78,35 @@ See [demo provenance and chapter notes](docs/demo.md).
 
 There is no facial identity model. Person IDs are temporary tracking IDs, not names or a unique-customer count. Guest names are entered by authorized staff.
 
+## Uploaded image and video analysis
+
+Open **Media Analysis** in the navbar to inspect an image or recorded video without changing live restaurant records.
+
+1. Choose a JPEG, PNG, WebP or browser-supported video (such as H.264 MP4/WebM), up to **250 MB**; video duration is limited to **10 minutes**.
+2. Use the broader table/desk scan for harder still images. Images enable it by default; videos use faster YOLOX sampling by default. Broader CPU scans can take tens of seconds per frame, including a minute under load.
+3. Click **Analyze image** or **Analyze video**. The browser decodes the source locally and submits bounded JPEG frames to the paired restaurant engine's actual local models.
+4. Review colored table outlines and the single statistics bar for the selected analyzed frame: table candidates, in use, items remain, looks clear, unverified and people.
+5. For videos, use **Play review** and the frame slider to inspect time-labeled analyzed snapshots. Export actual per-frame statistics as CSV, or download an annotated frame as PNG.
+6. **Stop analysis** stops further frame submissions and discards the pending result. An already-running local model call finishes in the background; it cannot be interrupted mid-inference. **Clear upload** resets the browser's analysis.
+
+| Color | Frame-level observation |
+| --- | --- |
+| Red | In use: a supported person detection overlaps this proposed table region |
+| Amber | Items remain: supported dining items are visible without an overlapping person |
+| Green | Looks clear: no supported items/person overlap detected; **not sanitation or confirmed cleaning** |
+| Gray | Unverified visual surface evidence |
+| Blue dashed outline | Person proposal |
+
+Video analysis samples across the clip's duration, up to **120 frames**. Review playback shows those snapshots; it is not continuous tracking or every-frame analysis. T-numbers and counts apply to one analyzed frame, not unique tables or guests across the clip. A single frame cannot confirm actual seating or distinguish a passerby from a diner.
+
+The upload-only person threshold is more conservative than the continuous live-camera tracker (0.40 versus 0.25), following an actual empty-table/chair false-positive regression check. This reduces that observed false overlap and can miss weaker person detections; it is not a universal accuracy guarantee. The existing live-camera threshold and workflow are unchanged.
+
+The original file remains in the browser. Selected JPEG frames reach the same authenticated restaurant engine through the public gateway and are processed in memory. Jobs are scoped to the engine user, retained for at most five minutes, bounded to two unfinished jobs and twenty retained jobs, and deleted by the browser after each result. No media upload creates tables, visits, reservations, cleanings or cloud owner-report data. The laptop/engine must be online and paired.
+
+Public requests are split into frames because [Vercel Functions limit individual request/response payloads](https://vercel.com/docs/functions/limitations). Only the exact media-analysis POST route allows up to 1 MiB; other gateway body limits remain 64 KiB. JPEG signature, dimensions and decoded pixels are checked on the engine before inference.
+
+[Media feature verification and limits](docs/media-analysis.md)
+
 ## How table detection works
 
 1. OpenCV reads the configured laptop/USB camera, supported RTSP feed or explicitly chosen development video.
@@ -88,11 +119,11 @@ There is no facial identity model. Person IDs are temporary tracking IDs, not na
 
 A conservative contour aid can refine a weak model proposal when a measured surface contour supports it. It is a setup aid and can still miss tables or suggest other furniture. Scores are model outputs, **not calibrated accuracy percentages**.
 
-Grounding DINO can take roughly 9–20+ seconds on this laptop under load. Person inference and preview continue separately. Broad results expire after 30 seconds and can be rejected earlier after a camera/view/region change. Surface evidence expires after five seconds.
+Grounding DINO can take roughly 9â€“20+ seconds on this laptop under load. Person inference and preview continue separately. Broad results expire after 30 seconds and can be rejected earlier after a camera/view/region change. Surface evidence expires after five seconds.
 
 Transparent, folded, hidden or unusual surfaces, low light, close crops and steep viewpoints remain difficult. A table outside the camera image cannot be detected. Manual mapping is available for fixed restaurant cameras; it still needs physical validation.
 
-[Latest table-scan verification](docs/table-detection-verification.md) · [Public evaluation provenance](evaluation/public-corpus.json)
+[Latest table-scan verification](docs/table-detection-verification.md) Â· [Public evaluation provenance](evaluation/public-corpus.json)
 
 ## Occupancy and cleaning
 
@@ -107,7 +138,7 @@ These are separate observations:
 | Looks clear | Fresh supported evidence finds no supported items on an observed table | Sanitation, no stains, no germs or no unsupported items |
 | Cleaning confirmed | Staff explicitly confirmed the cleaning action | A computer-vision sanitation certificate |
 
-Supported item checks use YOLOX COCO classes 39–55. Plates and napkins are not covered by that closed-set model. Cleaning is never automatically confirmed by a clear-looking frame.
+Supported item checks use YOLOX COCO classes 39â€“55. Plates and napkins are not covered by that closed-set model. Cleaning is never automatically confirmed by a clear-looking frame.
 
 Sustained absence after a visit produces a cleaning task. Lost camera evidence invalidates pending observations; it is not treated as proof of an empty or cleaned table. Keep the camera fixed and remap after moving it.
 
@@ -128,7 +159,7 @@ flowchart LR
   E --> O[Monitor + encrypted backup tasks]
 ```
 
-- **Standalone local mode:** browser → FastAPI on loopback, normally port 8765. Cloud accounts are optional.
+- **Standalone local mode:** browser â†’ FastAPI on loopback, normally port 8765. Cloud accounts are optional.
 - **This public installation:** dedicated SmartSeat engine on 8766; router on 8767 reserves `/smartseat-engine/*`. Other existing local-app traffic continues to 8765.
 - **Cloud identity/data:** Supabase Auth plus PostgreSQL. Camera/model processing stays on the restaurant computer.
 - **Frames:** kept in memory by the application and delivered through authenticated camera routes. Hosted Postgres does not store camera frames.
@@ -208,7 +239,7 @@ This explicitly selected mode uses `local/demo.sqlite3` and upstream sample zone
 4. Select **Map this table** on a credible candidate, or **Add table** and draw the real table/seating polygon.
 5. Enter its actual name and seat count. Keep traffic lanes out of the region. Check that neighboring seating regions are not mistakenly overlapping.
 6. Save only after the visible region matches the physical table. Manual coordinates are available when pointer drawing is inconvenient.
-7. Physically test empty → seated → departed. Leave actual cups/items, remove them, wipe the surface, then have staff confirm cleaning.
+7. Physically test empty â†’ seated â†’ departed. Leave actual cups/items, remove them, wipe the surface, then have staff confirm cleaning.
 8. Repeat for crowding, a short customer absence, partial occlusion, darkness and feed interruption. Remap after any camera move.
 
 Entrance/footfall regions need a view of both approach and inward crossing. Avoid overlapping coverage across entrance cameras if the same person could be counted twice.
@@ -256,7 +287,7 @@ A new Google account cannot automatically view this restaurant's camera. Sign-ou
 
 All seven cloud application tables have row-level security. Anonymous access is revoked. The atomic workspace/audit RPCs bind identity to `auth.uid()`, constrain writes and set an empty search path.
 
-[Database migration](supabase/migrations/20261105081808_cloud_identity_workspaces.sql) · [RLS test](tests/cloud/rls-isolation.sql) · [Auth acceptance](docs/auth-acceptance.md)
+[Database migration](supabase/migrations/20261105081808_cloud_identity_workspaces.sql) Â· [RLS test](tests/cloud/rls-isolation.sql) Â· [Auth acceptance](docs/auth-acceptance.md)
 
 ### Email authentication status
 
@@ -355,7 +386,7 @@ The enabled native logon task runs as the current Windows user. Actual engine an
 
 **Retention:** the manager panel shows proposed retention ages and eligible counts. It is preview-only; no automatic purge is enabled. The restaurant owner must choose the policy and real staff assignments.
 
-[Backup/restore guide](docs/backups.md) · [Monitor guide](docs/monitoring.md) · [Data/staff-access guide](docs/data-and-staff-access.md)
+[Backup/restore guide](docs/backups.md) Â· [Monitor guide](docs/monitoring.md) Â· [Data/staff-access guide](docs/data-and-staff-access.md)
 
 ## Verification
 
@@ -365,12 +396,12 @@ Run from the project root after installing the relevant base/vision dependencies
 .\.venv\Scripts\python.exe -m pip install -r requirements-test.txt
 .\.venv\Scripts\python.exe -m unittest discover -s tests -q
 npm.cmd ci --prefix deployment
-node --test tests/cloud/abuse.test.cjs tests/cloud/auth-acceptance.test.cjs tests/cloud/connector.test.cjs
+node --test tests/cloud/abuse.test.cjs tests/cloud/auth-acceptance.test.cjs tests/cloud/connector.test.cjs tests/cloud/media-helpers.test.cjs
 npm.cmd ci --prefix web
 npm.cmd run build --prefix web
 ```
 
-The latest software checkpoint passed **55 Python tests and 22 Node tests**, plus the production web build. Python coverage includes real YOLOX inference on the explicitly labeled upstream test clip, occupancy/service rules, visual evidence freshness, reports, reservations, database safeguards, connector handling, encrypted backups and watchdog boundaries. Node checks include auth/session failures, rate/body bounds and stream interruptions.
+The latest software checkpoint passed **61 Python tests and 25 Node tests**, plus the production web build. Python coverage includes real YOLOX inference on the explicitly labeled upstream test clip, occupancy/service rules, visual evidence freshness, reports, reservations, database safeguards, connector handling, encrypted backups and watchdog boundaries. Node checks include auth/session failures, rate/body bounds and stream interruptions.
 
 The safe live auth probe does not create accounts, send email or insert restaurant records:
 
@@ -446,7 +477,7 @@ Grounding DINO weights are downloaded, not committed. Virtual environments, depe
 - [x] Keep live workspace free of fabricated tables, visits and cleaning confirmations.
 - [x] Verify scheduled encrypted backup, isolated restore and actual outage recovery.
 - [ ] Map a clearly visible real table and verify capacity on the physical floor.
-- [ ] Complete real empty → seated → departed → items removed → wiped → staff-confirmed clean.
+- [ ] Complete real empty â†’ seated â†’ departed â†’ items removed â†’ wiped â†’ staff-confirmed clean.
 - [ ] Measure per-camera precision/recall and run a complete staffed restaurant shift.
 - [ ] Accept public email signup with authorized SMTP and its complete real account lifecycle.
 - [ ] Verify a future Windows logon, managed always-on hosting and offsite/full Auth disaster recovery.

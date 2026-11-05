@@ -24,6 +24,7 @@ This is an evidence-based release checklist, not a claim of a measured market pe
 ## Product experience
 
 - [x] Responsive desktop/mobile UI and 24 locally stored background images.
+- [x] Separate uploaded image/video analysis with real local inference, colored table proposals, a per-frame summary bar, sampled-frame review, annotated PNG and CSV export; no live-camera or restaurant-history mutations.
 - [x] Reduced-motion support, pause control and keyboard focus indicators.
 - [x] Real daily, weekly and weekend analytics with CSV export.
 - [x] Visual dining-item clearance suggestions with staff-confirmed cleaning.
