@@ -1,0 +1,9 @@
+.env*
+.vercel
+.git
+node_modules
+*.sqlite3*
+*.db*
+*.log
+*.jpg
+*.mp4

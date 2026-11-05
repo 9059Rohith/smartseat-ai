@@ -1,0 +1,9 @@
+.cloud-login{width:min(100%,490px)}
+.cloud-login>h2{font-family:Georgia,serif;font-size:2rem;margin:1.5rem 0 .6rem}
+.cloud-login>button{width:100%}
+.auth-divider{text-align:center;font-size:.78rem;opacity:.6;margin:1.1rem 0}
+.auth-links{display:flex;justify-content:space-between;gap:.5rem;margin:1rem 0;flex-wrap:wrap}
+.cloud-login>small,.account-page section>small{display:block;line-height:1.7;color:var(--muted);margin-top:1rem}
+.account-page{max-width:1000px}.account-page .panel{padding:1.6rem}.account-page form{margin-top:1rem}.account-page p{line-height:1.8}.account-page li{line-height:2.2}
+.connection .button{margin-left:1rem}
+@media(max-width:600px){.account-page .two{grid-template-columns:1fr}.cloud-login{padding:1.3rem}.cloud-login>h2{font-size:1.7rem}.account-page .panel-head{align-items:flex-start;flex-direction:column;gap:.5rem}}

@@ -1,0 +1,101 @@
+[
+  {
+    "id": "standing-desk",
+    "path": "evaluation/public-images/standing-desk.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Standing_desk.jpg",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Standing_desk.jpg/960px-Standing_desk.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//commons.wikimedia.org/wiki/User:Wikideas1\" title=\"User:Wikideas1\">Wikideas1</a>",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "expected_table": true,
+    "media_kind": "photograph"
+  },
+  {
+    "id": "standing-desk-stool",
+    "path": "evaluation/public-images/standing-desk-stool.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Standing_desk_with_stool.jpeg",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Standing_desk_with_stool.jpeg/960px-Standing_desk_with_stool.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"https://en.wikipedia.org/wiki/User:Kcida10\" class=\"extiw\" title=\"wikipedia:User:Kcida10\">Kcida10</a> at <a href=\"https://en.wikipedia.org/wiki/\" class=\"extiw\" title=\"wikipedia:\">English Wikipedia</a>",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "expected_table": true,
+    "media_kind": "rendered illustration"
+  },
+  {
+    "id": "glass-coffee-table",
+    "path": "evaluation/public-images/glass-coffee-table.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Coffee_Table.jpg",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Coffee_Table.jpg/960px-Coffee_Table.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Visitor7&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Visitor7 (page does not exist)\">Visitor7</a>",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "expected_table": true,
+    "media_kind": "photograph"
+  },
+  {
+    "id": "folding-picnic",
+    "path": "evaluation/public-images/folding-picnic.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Folding_Picnic_Table_2.jpg",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Folding_Picnic_Table_2.jpg/960px-Folding_Picnic_Table_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//www.flickr.com/people/8271947@N05\" class=\"extiw\" title=\"flickruser:8271947@N05\">Steven Groves</a>",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0",
+    "expected_table": true,
+    "media_kind": "photograph"
+  },
+  {
+    "id": "coffee-table-white",
+    "path": "evaluation/public-images/coffee-table-white.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Coffee_table_on_a_white_background.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Coffee_table_on_a_white_background.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "author": "<a href=\"https://en.wikipedia.org/wiki/User:JossDude\" class=\"extiw\" title=\"en:User:JossDude\">User:JossDude</a>",
+    "license": "Public domain",
+    "license_url": "",
+    "expected_table": true,
+    "media_kind": "photograph"
+  },
+  {
+    "id": "picnic-outdoor",
+    "path": "evaluation/public-images/picnic-outdoor.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Picnic_table_with_4_seats.jpg",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Picnic_table_with_4_seats.jpg/960px-Picnic_table_with_4_seats.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Alex9099&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Alex9099 (page does not exist)\">Alexandre Badalo</a>",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "expected_table": true,
+    "media_kind": "photograph"
+  },
+  {
+    "id": "surface-closeup",
+    "path": "evaluation/public-images/surface-closeup.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Surface_of_picnic_table_at_park.jpg",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6d/Surface_of_picnic_table_at_park.jpg/960px-Surface_of_picnic_table_at_park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Everyday_English&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Everyday English (page does not exist)\">Everyday English</a>",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "expected_table": true,
+    "media_kind": "photograph"
+  },
+  {
+    "id": "folding-tray",
+    "path": "evaluation/public-images/folding-tray.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:FoldMeUp_vertical_table_tray_positioning.jpg",
+    "image_url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f8/FoldMeUp_vertical_table_tray_positioning.jpg/960px-FoldMeUp_vertical_table_tray_positioning.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "author": "<a href=\"//commons.wikimedia.org/w/index.php?title=User:Cojocia&amp;action=edit&amp;redlink=1\" class=\"new\" title=\"User:Cojocia (page does not exist)\">Cojocia</a>",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "expected_table": true,
+    "media_kind": "photograph"
+  },
+  {
+    "id": "round-dining",
+    "path": "evaluation/public-images/round-dining.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:Round_white_table_colorful_chairs_square_dish_with_hands.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/36/Round_white_table_colorful_chairs_square_dish_with_hands.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "author": "<a href=\"//commons.wikimedia.org/wiki/User:%D7%98%D7%91%D7%A2%D7%AA-%D7%96%D7%A8%D7%9D\" title=\"User:\u05d8\u05d1\u05e2\u05ea-\u05d6\u05e8\u05dd\">\u05d8\u05d1\u05e2\u05ea-\u05d6\u05e8\u05dd</a>",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "expected_table": true,
+    "media_kind": "photograph"
+  }
+]

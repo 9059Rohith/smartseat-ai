@@ -1,0 +1,62 @@
+{
+  "duration_seconds": 152.85,
+  "capture": "Actual production browser, approximately 2fps; cuts between chapters",
+  "recorded": "2026-11-05",
+  "chapters": [
+    {
+      "start": 0,
+      "end": 25.059,
+      "label": "Live floor / honest camera health"
+    },
+    {
+      "start": 25.059,
+      "end": 37.654,
+      "label": "Waitlist / real guest entry form; no records submitted"
+    },
+    {
+      "start": 37.654,
+      "end": 45.828,
+      "label": "Reservations / actual empty workspace"
+    },
+    {
+      "start": 45.828,
+      "end": 56.078,
+      "label": "Reservations / mapping required before booking"
+    },
+    {
+      "start": 56.078,
+      "end": 70.281,
+      "label": "Owner analytics / real daily records, no seeded visits"
+    },
+    {
+      "start": 70.281,
+      "end": 84.555,
+      "label": "Weekend report / two actual dates; CSV export available"
+    },
+    {
+      "start": 84.555,
+      "end": 94.756,
+      "label": "Camera sources / real laptop feed; fixed table zones"
+    },
+    {
+      "start": 94.756,
+      "end": 107.046,
+      "label": "Table mapping / enter real capacity and draw seating; no fake zone saved"
+    },
+    {
+      "start": 107.046,
+      "end": 132.369,
+      "label": "Safeguards / actual monitor, encrypted backup and restore evidence"
+    },
+    {
+      "start": 132.369,
+      "end": 139.525,
+      "label": "Production dashboard / protected real restaurant workspace"
+    },
+    {
+      "start": 139.525,
+      "end": 152.85,
+      "label": "Secure sign-out / Google sign-in and separate restaurant pairing"
+    }
+  ]
+}
