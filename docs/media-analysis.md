@@ -26,3 +26,13 @@ Images default to the broader scan; videos default to faster YOLOX. Broad CPU sc
 - Desktop and 390 × 844 responsive review, frame slider, play/pause, annotated download and clear/cancel behavior are checked during release QA. The original production live camera is kept separate throughout.
 
 Endpoint/runtime tests do not replace physical table occupancy/cleaning acceptance. See the main release checklist for that work.
+
+## Production acceptance — 5 November 2026
+
+Production deployment `dpl_HMgoZRE6TpYD68BdQ74sfWCutpif` is ready at https://smartseat-ai-9059.vercel.app/. The authenticated public browser uploaded the real round-table photograph: local YOLOX plus the broader scan returned one correctly placed green table proposal, zero people and about 17 seconds measured inference. It then uploaded the clearly labeled four-second upstream development clip: all four sampled timestamps completed; the final frame had nine table proposals, seven visual in-use regions and two looks-clear regions. Counts are model observations, not manually seeded service records.
+
+Public play/pause advanced the selected source timestamp and summary together. Actual CSV export returned four matching rows. The laptop camera continued independently after engine restart; the production SQLite counts remained one camera and zero tables, visits, queue records, reservations or events. All 61 Python tests, 25 Node tests, the Vite production build and seven safe live authentication checks passed. An independent reviewer found no blocking issues. Browser console had no warnings/errors at the checked upload screen.
+
+The README screenshot is actual production upload analysis on the AI-generated upstream test clip, with its MIT attribution preserved in `demo/DineAssist-LICENSE.txt`. It is not a live-camera demonstration or a physical restaurant acceptance claim.
+
+The mobile-navbar follow-up is deployed as `dpl_U2zkhpfo8MeKfSSHvTWENSuoWN1m`. The final public check at a 390 × 844 viewport returned document width 375 and scroll width 375 (no horizontal page overflow), all seven navigation items were present, and the browser console was clear. The independent live camera continued to process fresh frames during upload QA (48 → 995 observed frames after restart). The app is left paired on the empty Media Analysis page, ready for the user's own upload.

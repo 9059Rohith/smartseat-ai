@@ -107,6 +107,10 @@ Public requests are split into frames because [Vercel Functions limit individual
 
 [Media feature verification and limits](docs/media-analysis.md)
 
+![Uploaded video analysis with colored table outlines and a per-frame statistics bar](docs/media/media-analysis.jpg)
+
+The screenshot shows actual local-model outputs on the explicitly AI-generated DineAssist development clip uploaded through the production app. It is not live CCTV or restaurant field-accuracy evidence; source/license attribution remains in `demo/DineAssist-LICENSE.txt`.
+
 ## How table detection works
 
 1. OpenCV reads the configured laptop/USB camera, supported RTSP feed or explicitly chosen development video.

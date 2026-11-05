@@ -115,4 +115,3 @@ class MediaHttpTests(unittest.TestCase):
         self.assertEqual(jobs.get(second,'one')['status'],'done')
         now[0]=301
         with self.assertRaises(HTTPException):jobs.get(second,'one')
-
