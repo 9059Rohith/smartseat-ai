@@ -2,7 +2,9 @@
 
 **A camera-assisted restaurant floor, service and owner reporting web application.**
 
-[Open the live application](https://smartseat-ai-9059.vercel.app/) Â· [Watch the 2:33 walkthrough](https://9059rohith.github.io/smartseat-ai/) Â· [Download MP4](https://github.com/9059Rohith/smartseat-ai/releases/download/v1.0-demo/smartseat-demo.mp4) Â· [Release checklist](docs/TOP_QUALITY_CHECKLIST.md) Â· [Deployment guide](docs/public-deployment.md)
+> **Hosting status — checked 11 November 2026:** The public Vercel application is temporarily unavailable: the provider returns **HTTP 402 / DEPLOYMENT_DISABLED** because the Hobby team's CPU allowance was exceeded. This is a hosting-account block, not a broken GitHub URL. The [recorded demo is available](https://9059rohith.github.io/smartseat-ai/), and the application on this restaurant laptop is reachable at [http://127.0.0.1:8766/](http://127.0.0.1:8766/). [Current outage and recovery details](docs/hosting-status.md). The recorded demo is a video, not an interactive replacement for the application.
+
+[Watch the recorded 2:33 walkthrough](https://9059rohith.github.io/smartseat-ai/) | [Open on this laptop](http://127.0.0.1:8766/) | [Hosted app (provider-disabled)](https://smartseat-ai-9059.vercel.app/) | [Download MP4](https://github.com/9059Rohith/smartseat-ai/releases/download/v1.0-demo/smartseat-demo.mp4) | [Hosting status](docs/hosting-status.md) | [Deployment guide](docs/public-deployment.md)
 
 [![SmartSeat production application walkthrough](docs/media/demo-poster.jpg)](https://9059rohith.github.io/smartseat-ai/)
 

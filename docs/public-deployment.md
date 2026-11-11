@@ -1,5 +1,7 @@
 # Running the deployed SmartSeat app
 
+> **11 November 2026:** Vercel currently returns HTTP 402 / DEPLOYMENT_DISABLED because of the team's Hobby CPU allowance. The public URL below is configured correctly but unavailable while the provider block remains. See [hosting status and working alternatives](hosting-status.md). The local engine and recorded demo remain available.
+
 Live application: https://smartseat-ai-9059.vercel.app/
 
 Run `./Start-PublicApp.ps1` from this project on the restaurant laptop. It checks the dedicated engine on `127.0.0.1:8766`, starts it if needed, checks/starts the loopback router on port 8767, and verifies the public connector. Existing requests for the other local app continue to port 8765. The `/smartseat-engine/*` namespace is reserved for SmartSeat; its API routes go to port 8766. The script does not stop other apps or change their data.
