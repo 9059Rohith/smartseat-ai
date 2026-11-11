@@ -7,7 +7,7 @@ const POLICIES = {
   'media/analyze': [90, 60000],
 };
 
-function createGuard({clock=Date.now,maxBuckets=3000,trustProxy=process.env.VERCEL==='1',log=console.warn}={}) {
+function createGuard({clock=Date.now,maxBuckets=3000,trustProxy=process.env.VERCEL==='1',trustLoopbackProxy=process.env.SMARTSEAT_RUNTIME==='local',log=console.warn}={}) {
   const salt=crypto.randomBytes(32), buckets=new Map();
   function take(identity,action,limit,window,now){
     const key=crypto.createHmac('sha256',salt).update(identity+'\0'+action).digest('hex');
@@ -35,7 +35,10 @@ function createGuard({clock=Date.now,maxBuckets=3000,trustProxy=process.env.VERC
       if(Buffer.byteLength(body)>maximum)return {status:413,detail:'This request is too large.'};
     }
     const forwarded=trustProxy?req.headers['x-forwarded-for']:null;
-    const identity=typeof forwarded==='string'?forwarded.split(',')[0].trim():req.socket?.remoteAddress||'unknown';
+    const peer=req.socket?.remoteAddress||'unknown',localKey=req.headers['x-smartseat-client-key'];
+    // The loopback-only router overwrites this opaque key for every public request.
+    const proxyKey=trustLoopbackProxy&&['127.0.0.1','::1','::ffff:127.0.0.1'].includes(peer)&&typeof localKey==='string'&&/^[a-f0-9]{64}$/.test(localKey)?localKey:null;
+    const identity=proxyKey||(typeof forwarded==='string'?forwarded.split(',')[0].trim():peer);
     const now=clock();
     const general=take(identity,'all_requests',600,60000,now);if(general)return general;
     const policy=POLICIES[route];

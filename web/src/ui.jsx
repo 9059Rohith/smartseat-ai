@@ -1,3 +1,4 @@
+import { apiURL } from './paths.mjs'
 import React, { createContext, useContext, useEffect, useRef } from 'react'
 
 const shapes = {
@@ -55,7 +56,7 @@ export function Modal({ title, children, close }) {
 }
 
 export async function request(path, method = 'GET', body) {
-  const response = await fetch('/api' + path, { method, headers: body === undefined ? {} : { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
+  const response = await fetch(apiURL(path), { method, headers: body === undefined ? {} : { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
   let data
   try { data = await response.json() } catch { throw new Error('Restaurant engine is unavailable. Keep the restaurant computer online.') }
   if (!response.ok) {

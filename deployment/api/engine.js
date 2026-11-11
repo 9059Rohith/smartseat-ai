@@ -56,6 +56,7 @@ module.exports = async function handler(req, res) {
       if (req.headers[key]) headers[key] = req.headers[key];
     }
     if (cloud.enabled()) headers.cookie = cloud.engineCookie(req);
+    if(process.env.SMARTSEAT_RUNTIME==='local')headers['x-forwarded-proto']='https';
     const body = ['GET', 'HEAD'].includes(req.method) || req.body === undefined ? undefined :
       typeof req.body === 'string' || Buffer.isBuffer(req.body) ? req.body : JSON.stringify(req.body);
     const response = await fetch(upstream, { method: req.method, headers, body,

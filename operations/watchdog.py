@@ -19,7 +19,7 @@ from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_ope
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ISSUES = frozenset({"engine_offline", "router_offline", "public_offline",
+ISSUES = frozenset({"engine_offline", "router_offline", "public_offline", "gateway_offline",
                     "camera_blocked", "camera_unavailable", "capture_unknown", "database_missing",
                     "database_unrecognized"})
 MAX_LOG_BYTES = 131072
@@ -194,13 +194,17 @@ class Monitor:
         now = self.clock()
         engine = self.probe("http://127.0.0.1:8766/api/health", "smartseat")
         router = self.probe("http://127.0.0.1:8767/smartseat-engine/router-health", "smartseat-router")
+        try:
+            gateway_enabled=bool(json.loads((self.local/'public-connection.json').read_text()).get('public_app_origin'))
+        except (OSError,ValueError):gateway_enabled=False
+        gateway=self.probe('http://127.0.0.1:8768/smartseat/gateway-health','smartseat-gateway') if gateway_enabled else Probe('ok')
         public_url = public_health_url(self.root)
         if self.last_public_at is None or now - self.last_public_at >= self.public_interval:
             self.public_result = self.probe(public_url, "smartseat") if public_url else Probe("offline")
             self.last_public_at = now
         issues = []
         for result, issue in ((engine, "engine_offline"), (router, "router_offline"),
-                              (self.public_result, "public_offline")):
+                              (self.public_result, "public_offline"),(gateway,'gateway_offline')):
             if result.state != "ok":
                 issues.append(issue)
         database = database_state(self.root)
@@ -226,9 +230,9 @@ class Monitor:
             elif self.previous_issues:
                 self._event("resolved", now, [])
             self.previous_issues = issues
-        results = (engine, router, self.public_result)
+        results = (engine, router, self.public_result, gateway)
         safe_identity = all(result.state in {"ok", "offline"} for result in results)
-        needs_repair = any(i in issues for i in ("engine_offline", "router_offline", "public_offline"))
+        needs_repair = any(i in issues for i in ("engine_offline", "router_offline", "public_offline",'gateway_offline'))
         cooling_down = self.last_recovery is not None and now - self.last_recovery < self.cooldown
         if (repair and database == "recognized" and public_url and safe_identity and needs_repair
                 and not cooling_down):

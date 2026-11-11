@@ -1,6 +1,7 @@
+import { assetURL } from './paths.mjs'
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
 
-export const backgrounds = Array.from({ length: 24 }, (_, index) => '/assets/backgrounds/scene-' + String(index).padStart(2, '0') + '.webp')
+export const backgrounds = Array.from({ length: 24 }, (_, index) => assetURL('/assets/backgrounds/scene-') + String(index).padStart(2, '0') + '.webp')
 
 export function useAtmosphere(page, ready) {
   const [reduced, setReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches)

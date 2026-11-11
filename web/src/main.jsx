@@ -1,3 +1,4 @@
+import { apiURL, hostedGateway } from './paths.mjs'
 import React, { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Button, Icon, NoticeContext, cameraLabels, field, request } from './ui'
@@ -52,19 +53,19 @@ function App() {
   const close = () => setModal(null)
   const open = (kind, id, suggestion) => { setNotice(null); setModal({ kind, id, suggestion }) }
   useEffect(() => {
-    if(!['127.0.0.1','localhost'].includes(location.hostname))request('/auth/config').then(setAuthConfig).catch(()=>setAuthConfig({enabled:false}))
+    if(hostedGateway)request('/auth/config').then(setAuthConfig).catch(()=>setAuthConfig({enabled:false}))
     request('/health').then(data => setDemo(data.demo)).catch(e => setLoadingError(e.message))
     request('/me').then(setUser).catch(() => setUser(null))
   }, [])
   useEffect(() => {
     if (!user) { setState(null); return }
-    if(!['127.0.0.1','localhost'].includes(location.hostname)){
+    if(hostedGateway){
       let active=true,timer,controller
       async function poll(){
         controller=new AbortController()
         const timeout=setTimeout(()=>controller.abort(),20000)
         try{
-          const response=await fetch('/api/state',{signal:controller.signal,cache:'no-store'})
+          const response=await fetch(apiURL('/state'),{signal:controller.signal,cache:'no-store'})
           if(response.status===401){if(active)setUser(null);return}
           if(!response.ok)throw new Error('Restaurant engine is unavailable.')
           const data=await response.json()
@@ -78,7 +79,7 @@ function App() {
       poll()
       return()=>{active=false;controller?.abort();clearTimeout(timer)}
     }
-    const live = new EventSource('/api/live')
+    const live = new EventSource(apiURL('/live'))
     live.onmessage = event => { setState(JSON.parse(event.data)); setConnection(true) }
     live.onerror = () => { setConnection(false); request('/me').then(session => { if (!session) setUser(null) }).catch(() => {}) }
     request('/state').then(setState).catch(e => setLoadingError(e.message))
@@ -108,7 +109,7 @@ function App() {
       running.current.delete(action)
     }
   }
-  if (user === undefined || (!['127.0.0.1','localhost'].includes(location.hostname)&&authConfig===null)) return <main className="loading">Opening SmartSeat…</main>
+  if (user === undefined || (hostedGateway&&authConfig===null)) return <main className="loading">Opening SmartSeat…</main>
   if(recovery&&user?.cloud)return <><Atmosphere scene={atmosphere.scene}/><CloudLogin config={authConfig||{}} recovery onRecovered={()=>setRecovery(false)}/></>
   if(user===null&&authConfig?.enabled)return <><Atmosphere scene={atmosphere.scene}/><CloudLogin config={authConfig} onLogin={setUser}/></>
   if (user === null) return <><Atmosphere scene={atmosphere.scene}/><Login demo={demo} engineError={loadingError} onLogin={value=>{setLoadingError('');setUser(value)}}/></>

@@ -1,3 +1,4 @@
+import { apiURL } from './paths.mjs'
 import React, { useEffect, useRef, useState } from 'react'
 import { Button, Icon } from './ui'
 import { mediaCSV, mediaStates, mediaTime, sampleTimes, saveBlob, waitForMedia } from './media-helpers.mjs'
@@ -6,7 +7,7 @@ import './media-analysis.css'
 const empty={tables:0,people:0,chairs:0,occupied:0,items_present:0,looks_clear:0,unknown:0}
 
 async function mediaRequest(path,method,body,signal) {
-  const response=await fetch('/api/media/'+path,{method,headers:body?{'Content-Type':'application/json'}:{},
+  const response=await fetch(apiURL('/media/'+path),{method,headers:body?{'Content-Type':'application/json'}:{},
     body:body?JSON.stringify(body):undefined,cache:'no-store',signal:AbortSignal.any([signal,AbortSignal.timeout(20000)])})
   const data=await response.json().catch(()=>({detail:'The restaurant engine did not return a valid response.'}))
   if(!response.ok)throw new Error(typeof data.detail==='string'?data.detail:'This media request could not be processed.')
@@ -70,7 +71,7 @@ export function MediaAnalysis({available,onAccount}) {
   const run=useRef(0),controller=useRef(null),job=useRef(null),picker=useRef(null)
   const video=file?.type.startsWith('video/'),frame=results[index],summary=frame?.summary||empty
   useEffect(()=>()=>{if(url)URL.revokeObjectURL(url)},[url])
-  useEffect(()=>()=>{run.current++;controller.current?.abort();if(job.current)fetch('/api/media/jobs/'+job.current,{method:'DELETE',signal:AbortSignal.timeout(5000)}).catch(()=>{})},[])
+  useEffect(()=>()=>{run.current++;controller.current?.abort();if(job.current)fetch(apiURL('/media/jobs/'+job.current),{method:'DELETE',signal:AbortSignal.timeout(5000)}).catch(()=>{})},[])
   useEffect(()=>{
     if(!playing||busy||results.length<2)return
     const timer=setInterval(()=>setIndex(previous=>previous+1<results.length?previous+1:0),700)
@@ -114,7 +115,7 @@ export function MediaAnalysis({available,onAccount}) {
           }
           if(!data)throw new Error('This frame took too long. Try the fast scan or check the engine.')
         }finally{
-          fetch('/api/media/jobs/'+created.id,{method:'DELETE',signal:AbortSignal.timeout(5000)}).catch(()=>{})
+          fetch(apiURL('/media/jobs/'+created.id),{method:'DELETE',signal:AbortSignal.timeout(5000)}).catch(()=>{})
           if(job.current===created.id)job.current=null
         }
         if(run.current!==current)return

@@ -1,3 +1,4 @@
+import { apiURL } from './paths.mjs'
 import React, { useEffect, useRef, useState } from 'react'
 import { Button, Empty, Icon, Status, cameraLabels, duration, eventLabels, stamp } from './ui'
 
@@ -27,7 +28,7 @@ export function TableActions({ table, act }) {
 }
 
 export function CameraFeed({ camera, raw = false, fixedFrame, children }) {
-  const url = camera?.image && '/api/cameras/' + camera.id + '/frame?' + (raw ? 'raw=true&' : '') + 'v=' + (fixedFrame || camera.frame_at)
+  const url = camera?.image && apiURL('/cameras/') + camera.id + '/frame?' + (raw ? 'raw=true&' : '') + 'v=' + (fixedFrame || camera.frame_at)
   return url ? <div className="feed-image"><img src={url} alt={raw ? 'Unannotated camera frame for drawing zones' : 'Camera view with anonymous detections and table outlines'} draggable="false"/>{!raw && camera.status==='obscured' && <div className="feed-condition"><Icon name="camera" size={34}/><strong>View blocked or dark</strong><span>Uncover the lens and improve lighting.</span></div>}{children}</div> :
     <div className="feed-empty"><Icon name="camera" size={40}/><strong>{camera ? cameraLabels[camera.status] : 'No camera selected'}</strong><span>{camera?.message || 'Add a camera to view your dining room.'}</span></div>
 }

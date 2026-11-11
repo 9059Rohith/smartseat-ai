@@ -1,6 +1,10 @@
 # Hosting status — 11 November 2026
 
-## Public application
+## Restored full application
+
+[Open the working application](https://9059rohith.github.io/smartseat-ai/app/). The full app now uses the laptop-hosted Node gateway through the existing HTTPS connector; Google login, engine pairing, camera frames, reports and uploads were verified. It opens on other laptops while the restaurant laptop remains awake and online. See [the runtime guide](public-runtime.md). The old Vercel block described below remains in place.
+
+## Legacy Vercel application
 
 The configured address is https://smartseat-ai-9059.vercel.app/. GitHub points to that correct address, but Vercel currently rejects it with HTTP **402**, `X-Vercel-Error: DEPLOYMENT_DISABLED`.
 
@@ -30,7 +34,7 @@ The project has not been upgraded, no billing setting was changed, and no new ac
 
 Open the local address on the same laptop. On a new installation or different port, follow the README's local setup instructions. Do not stop another application on port 8765.
 
-## Before declaring public service restored
+## Before declaring the legacy Vercel service restored
 
 1. Confirm the team no longer reports the CPU soft-block; do not treat a successful build alone as recovery.
 2. Verify the public homepage and authentication configuration return HTTP 200 rather than 402.

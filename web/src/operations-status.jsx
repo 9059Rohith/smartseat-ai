@@ -1,7 +1,8 @@
+import { apiURL } from './paths.mjs'
 import React, {useEffect,useState} from 'react'
 import {Button} from './ui'
 
-const issues={engine_offline:'Restaurant engine is offline',router_offline:'Local connector router is offline',public_offline:'Public connector is unavailable',camera_blocked:'Camera view is blocked or too dark',camera_unavailable:'Camera capture is unavailable or stopped',capture_unknown:'Camera health is not yet verified',database_missing:'Restaurant database is missing',database_unrecognized:'Restaurant database could not be verified; automatic recovery is paused',unexpected_service:'A configured port belongs to another application'}
+const issues={gateway_offline:'Public application gateway is offline',engine_offline:'Restaurant engine is offline',router_offline:'Local connector router is offline',public_offline:'Public connector is unavailable',camera_blocked:'Camera view is blocked or too dark',camera_unavailable:'Camera capture is unavailable or stopped',capture_unknown:'Camera health is not yet verified',database_missing:'Restaurant database is missing',database_unrecognized:'Restaurant database could not be verified; automatic recovery is paused',unexpected_service:'A configured port belongs to another application'}
 const date=value=>value?new Date(value).toLocaleString():'Not verified yet'
 
 export function OperationsStatus(){
@@ -10,7 +11,7 @@ export function OperationsStatus(){
     let active=true,busy=false,controller
     async function update(){
       if(busy)return;busy=true;controller=new AbortController();const timer=setTimeout(()=>controller.abort(),20000)
-      try{const response=await fetch('/api/operations',{signal:controller.signal,cache:'no-store'});const value=await response.json();if(!response.ok)throw new Error(value.detail||'Operational status could not load.');if(active){setData(value);setError('')}}
+      try{const response=await fetch(apiURL('/operations'),{signal:controller.signal,cache:'no-store'});const value=await response.json();if(!response.ok)throw new Error(value.detail||'Operational status could not load.');if(active){setData(value);setError('')}}
       catch(e){if(active)setError(e.name==='AbortError'?'The restaurant connection timed out. Retrying…':e.message)}
       finally{clearTimeout(timer);busy=false}
     }

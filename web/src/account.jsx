@@ -1,3 +1,4 @@
+import { apiURL, appHome } from './paths.mjs'
 import React, { useEffect, useState } from 'react'
 import { Button, Icon, field, request } from './ui'
 import { OperationsStatus } from './operations-status'
@@ -11,7 +12,7 @@ export function CloudLogin({ config, onLogin, recovery = false, onRecovered }) {
   return <main className="sign-in"><div className="login panel cloud-login">
     <div className="login-brand"><Icon name="chair" size={40}/><h1>SmartSeat AI</h1></div>
     <h2>{titles[mode]}</h2><p className="muted">Private workspace. Real restaurant data.</p>
-    {config.google_enabled && ['signin','signup'].includes(mode) && <><Button onClick={()=>location.assign('/api/auth/google')}>Continue with Google</Button><p className="auth-divider">or continue with email</p></>}
+    {config.google_enabled && ['signin','signup'].includes(mode) && <><Button onClick={()=>location.assign(apiURL('/auth/google'))}>Continue with Google</Button><p className="auth-divider">or continue with email</p></>}
     <form onSubmit={async e=>{
       e.preventDefault(); const form=e.currentTarget; setPending(true);setError('');setMessage('')
       const routes={signin:'sign-in',signup:'sign-up',forgot:'forgot-password',reset:'update-password'}
@@ -19,7 +20,7 @@ export function CloudLogin({ config, onLogin, recovery = false, onRecovered }) {
         const result=await request('/auth/'+routes[mode],'POST',{email:field(form,'email'),password:field(form,'password'),name:field(form,'name')})
         if(mode==='signin')onLogin(result)
         else if(result.user)onLogin(result.user)
-        else if(mode==='reset'){history.replaceState(null,'','/');onRecovered?.()}
+        else if(mode==='reset'){history.replaceState(null,'',appHome);onRecovered?.()}
         else setMessage(result.message)
       } catch(e){setError(e.message)} finally{setPending(false)}
     }}>

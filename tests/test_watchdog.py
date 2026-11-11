@@ -52,6 +52,17 @@ class WatchdogTest(unittest.TestCase):
         self.assertEqual(self.repairs, [])
         self.assertFalse((self.root / "local/smartseat.sqlite3").exists())
 
+    def test_configured_public_gateway_outage_recovers_but_wrong_service_is_not_restarted(self):
+        (self.root/'local/public-connection.json').write_text(json.dumps({
+            'engine_origin':'https://example.test/smartseat-engine','public_app_origin':'https://example.test'}))
+        gateway=[Probe('offline')]
+        self.monitor.probe=lambda url,identity:gateway[0] if identity=='smartseat-gateway' else self.probe(url,identity)
+        self.assertIn('gateway_offline',self.monitor.check()['issues'])
+        self.assertEqual(len(self.repairs),1)
+        self.now+=301;gateway[0]=Probe('mismatch',{'app':'another-app'})
+        self.assertIn('gateway_offline',self.monitor.check()['issues'])
+        self.assertEqual(len(self.repairs),1)
+
     def test_only_exact_service_identity_is_healthy_and_mismatch_prevents_repair(self):
         self.probes[0] = Probe("mismatch", {"app": "otherapp"})
         self.assertIn("engine_offline", self.monitor.check()["issues"])

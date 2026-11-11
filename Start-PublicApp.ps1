@@ -2,6 +2,7 @@ $ErrorActionPreference='Stop'
 Push-Location $PSScriptRoot
 try {
     $smartseatPython=Join-Path $PSScriptRoot '.venv/Scripts/python.exe'
+    $smartseatConfig=Get-Content 'local/public-connection.json' -Raw | ConvertFrom-Json
     & $smartseatPython 'operations/watchdog.py' --check-database | Out-Null
     if($LASTEXITCODE -ne 0){throw 'The restaurant database is missing or unrecognized. Restore a verified backup before starting; no new database was created.'}
     $smartseatShell=(Get-Process -Id $PID).Path
@@ -31,5 +32,6 @@ try {
     }
     & $smartseatPython 'connector/ensure_connection.py'
     if($LASTEXITCODE -ne 0){throw 'The public connector could not be verified.'}
-    Write-Host 'SmartSeat is running locally at http://127.0.0.1:8766/ and publicly at https://smartseat-ai-9059.vercel.app/'
+    if($smartseatConfig.public_app_origin){& "$PSScriptRoot/Start-PublicGateway.ps1";Write-Host "SmartSeat public application: $($smartseatConfig.public_app_origin)/smartseat/"}
+    else {Write-Host 'SmartSeat engine is running locally at http://127.0.0.1:8766/.'}
 } finally {Pop-Location}

@@ -3,24 +3,28 @@ const cookie = require('cookie');
 
 const enabled = () => process.env.SMARTSEAT_CLOUD_AUTH === '1';
 const site = () => (process.env.SMARTSEAT_PUBLIC_ORIGIN || 'https://smartseat-ai-9059.vercel.app').replace(/\/$/, '');
+const base = () => process.env.SMARTSEAT_APP_BASE==='/smartseat'?'/smartseat':'';
+const appPath = (path='/') => base()+path;
+const cookiePath = () => base()+'/';
 
 function appendCookies(res, values) {
   const prior = res.getHeader('Set-Cookie') || [];
-  res.setHeader('Set-Cookie', [...(Array.isArray(prior) ? prior : [prior]), ...values]);
+  const scoped=values.map(value=>base()?value.replace(/(;\s*Path=)\/([^;]*)/i,'$1'+cookiePath()):value);
+  res.setHeader('Set-Cookie', [...(Array.isArray(prior) ? prior : [prior]), ...scoped]);
 }
 function clearEngine(res) {
-  appendCookies(res, [cookie.serialize('smartseat_session', '', { path: '/', secure: true, httpOnly: true, sameSite: 'strict', maxAge: 0 })]);
+  appendCookies(res, [cookie.serialize('smartseat_session', '', { path: cookiePath(), secure: true, httpOnly: true, sameSite: 'strict', maxAge: 0 })]);
 }
 function createContext(req, res) {
   const jar = cookie.parse(req.headers.cookie || '');
   const supabase = createServerClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
-    cookieOptions: { name: 'smartseat-cloud-auth', path: '/', secure: true, httpOnly: true, sameSite: 'lax' },
+    cookieOptions: { name: 'smartseat-cloud-auth', path: cookiePath(), secure: true, httpOnly: true, sameSite: 'lax' },
     cookies: {
       getAll: () => Object.entries(jar).map(([name, value]) => ({ name, value })),
       setAll(values) {
         values.forEach(({ name, value }) => { jar[name] = value; });
         appendCookies(res, values.map(({ name, value, options }) => cookie.serialize(name, value, {
-          ...options, path: '/', secure: true, httpOnly: true, sameSite: 'lax',
+          ...options, path: cookiePath(), secure: true, httpOnly: true, sameSite: 'lax',
         })));
       },
     },
@@ -61,6 +65,10 @@ async function audit(context, restaurant, event) {
   if (result.error) console.warn('Cloud audit could not be recorded:', result.error.code);
 }
 function engineURL(path) {
+  if(process.env.SMARTSEAT_RUNTIME==='local'){
+    const port=Number(process.env.SMARTSEAT_LOCAL_ENGINE_PORT);if(!Number.isInteger(port)||port<1024||port>65535)throw new Error('Invalid loopback engine port');
+    return new URL('api/'+path,'http://127.0.0.1:'+port+'/');
+  }
   const origin = new URL((process.env.SMARTSEAT_ENGINE_ORIGIN || '').trim());
   if (origin.protocol !== 'https:' || origin.username || origin.password || origin.search || origin.hash) throw new Error('Invalid engine configuration');
   origin.pathname = origin.pathname.replace(/\/$/, '') + '/';
@@ -69,6 +77,7 @@ function engineURL(path) {
 async function engineRequest(req, path, options = {}) {
   return fetch(engineURL(path), { ...options, redirect: 'manual', signal: AbortSignal.timeout(8000), headers: {
     'ngrok-skip-browser-warning': 'true', 'User-Agent': 'SmartSeat-Gateway/1.0', cookie: engineCookie(req),
+    ...(process.env.SMARTSEAT_RUNTIME==='local'?{'x-forwarded-proto':'https'}:{}),
     ...(req.headers.origin ? { origin: req.headers.origin } : {}), ...options.headers,
   } });
 }
@@ -93,26 +102,26 @@ async function handleAuth(req, res, route, context) {
   const db = context.supabase, body = input(req);
   const fail = (status, detail) => res.status(status).json({ detail });
   if (route === 'auth/google' && req.method === 'GET') {
-    const result = await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: site() + '/api/auth/callback', skipBrowserRedirect: true } });
-    if (result.error || !result.data.url) return res.redirect(303, '/?auth_error=google_unavailable');
+    const result = await db.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: site() + appPath('/api/auth/callback'), skipBrowserRedirect: true } });
+    if (result.error || !result.data.url) return res.redirect(303, appPath('/?auth_error=google_unavailable'));
     return res.redirect(303, result.data.url);
   }
   if (route === 'auth/callback' && req.method === 'GET') {
     const code = req.query.code;
     const result = typeof code === 'string' ? await db.auth.exchangeCodeForSession(code) : { error: true };
-    if (result.error) return res.redirect(303, '/?auth_error=callback_failed');
+    if (result.error) return res.redirect(303, appPath('/?auth_error=callback_failed'));
     await disconnect(req, res);
     const user = await identity(context);
     if (user) { const restaurant = await workspace(context, user); await audit(context, restaurant, 'signed_in'); }
-    return res.redirect(303, req.query.recovery === '1' ? '/?reset_password=1' : '/');
+    return res.redirect(303, appPath(req.query.recovery === '1' ? '/?reset_password=1' : '/'));
   }
   if (route === 'auth/confirm' && req.method === 'GET') {
     const { token_hash, type } = req.query;
-    if (typeof token_hash !== 'string' || !['signup', 'recovery', 'email_change'].includes(type)) return res.redirect(303, '/?auth_error=confirmation_failed');
+    if (typeof token_hash !== 'string' || !['signup', 'recovery', 'email_change'].includes(type)) return res.redirect(303, appPath('/?auth_error=confirmation_failed'));
     const result = await db.auth.verifyOtp({ token_hash, type });
-    if (result.error) return res.redirect(303, '/?auth_error=confirmation_failed');
+    if (result.error) return res.redirect(303, appPath('/?auth_error=confirmation_failed'));
     await disconnect(req, res);
-    return res.redirect(303, type === 'recovery' ? '/?reset_password=1' : '/');
+    return res.redirect(303, appPath(type === 'recovery' ? '/?reset_password=1' : '/'));
   }
   if (req.method === 'POST' && route === 'auth/sign-in') {
     if (!email(body.email) || typeof body.password !== 'string' || body.password.length > 128) return fail(400, 'Enter your email and password.');
@@ -126,7 +135,7 @@ async function handleAuth(req, res, route, context) {
   if (req.method === 'POST' && route === 'auth/sign-up') {
     if (!email(body.email) || !password(body.password) || typeof body.name !== 'string' || !body.name.trim() || body.name.length > 100) return fail(400, 'Enter your name, valid email and a password of 12–128 characters.');
     const result = await db.auth.signUp({ email: body.email.trim(), password: body.password,
-      options: { data: { full_name: body.name.trim() }, emailRedirectTo: site() + '/api/auth/callback' } });
+      options: { data: { full_name: body.name.trim() }, emailRedirectTo: site() + appPath('/api/auth/callback') } });
     if (result.error) return fail(result.error.status === 429 ? 429 : 400, result.error.status === 429 ? 'Too many attempts. Please try again later.' : 'Account creation could not be completed. Check your details and try again.');
     if (result.data.session) {
       await disconnect(req, res);
@@ -137,7 +146,7 @@ async function handleAuth(req, res, route, context) {
   }
   if (req.method === 'POST' && route === 'auth/forgot-password') {
     if (!email(body.email)) return fail(400, 'Enter a valid email address.');
-    const result = await db.auth.resetPasswordForEmail(body.email.trim(), { redirectTo: site() + '/api/auth/callback?recovery=1' });
+    const result = await db.auth.resetPasswordForEmail(body.email.trim(), { redirectTo: site() + appPath('/api/auth/callback?recovery=1') });
     if (result.error?.status === 429) return fail(429, 'Too many requests. Please try again later.');
     if (result.error) return fail(503, 'Email recovery is temporarily unavailable. Please try again later.');
     return res.json({ message: 'If this account exists, a password reset link has been sent.' });
@@ -188,4 +197,4 @@ async function handleAuth(req, res, route, context) {
   return fail(404, 'This account action is not available.');
 }
 
-module.exports = { enabled, site, createContext, identity, workspace, publicUser, handleAuth, appendCookies, engineRequest, engineURL, engineCookie, audit };
+module.exports = { enabled, site, appPath, createContext, identity, workspace, publicUser, handleAuth, appendCookies, engineRequest, engineURL, engineCookie, audit };

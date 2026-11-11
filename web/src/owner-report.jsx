@@ -1,3 +1,4 @@
+import { apiURL } from './paths.mjs'
 import React, { useEffect, useState } from 'react'
 import { Button, Empty, duration, stamp } from './ui'
 
@@ -36,7 +37,7 @@ export function Analytics({hasEntrance}) {
       const timeout=setTimeout(()=>controller.abort(),18000)
       try{
         const {start,end,tz}=period(range)
-        const response=await fetch(`/api/analytics?start=${start}&end=${end}&tz=${tz}&period=${range}`,{signal:controller.signal})
+        const response=await fetch(apiURL(`/analytics?start=${start}&end=${end}&tz=${tz}&period=${range}`),{signal:controller.signal})
         const data=await response.json()
         if(!response.ok)throw new Error(data.detail||'The owner report could not be loaded.')
         if(active){setReport(data);setUpdated(data.synced_at?new Date(data.synced_at):new Date());setError('')}

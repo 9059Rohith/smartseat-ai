@@ -2,9 +2,9 @@
 
 **A camera-assisted restaurant floor, service and owner reporting web application.**
 
-> **Hosting status — checked 11 November 2026:** The public Vercel application is temporarily unavailable: the provider returns **HTTP 402 / DEPLOYMENT_DISABLED** because the Hobby team's CPU allowance was exceeded. This is a hosting-account block, not a broken GitHub URL. The [recorded demo is available](https://9059rohith.github.io/smartseat-ai/), and the application on this restaurant laptop is reachable at [http://127.0.0.1:8766/](http://127.0.0.1:8766/). [Current outage and recovery details](docs/hosting-status.md). The recorded demo is a video, not an interactive replacement for the application.
+> **Working public application — 11 November 2026:** [Open SmartSeat AI](https://9059rohith.github.io/smartseat-ai/app/). It opens the full interactive app from other laptops: Google sign-in, restaurant pairing, camera, reports and uploads. Keep the restaurant laptop powered on, awake and online. On the free connector notice, choose **Visit Site**. [Access and startup instructions](docs/public-runtime.md). The old Vercel address remains quota-blocked; the working app now uses the existing HTTPS connector.
 
-[Watch the recorded 2:33 walkthrough](https://9059rohith.github.io/smartseat-ai/) | [Open on this laptop](http://127.0.0.1:8766/) | [Hosted app (provider-disabled)](https://smartseat-ai-9059.vercel.app/) | [Download MP4](https://github.com/9059Rohith/smartseat-ai/releases/download/v1.0-demo/smartseat-demo.mp4) | [Hosting status](docs/hosting-status.md) | [Deployment guide](docs/public-deployment.md)
+[Open the working application](https://9059rohith.github.io/smartseat-ai/app/) | [Recorded 2:33 walkthrough](https://9059rohith.github.io/smartseat-ai/) | [Local app](http://127.0.0.1:8766/) | [Public runtime guide](docs/public-runtime.md) | [Release checklist](docs/TOP_QUALITY_CHECKLIST.md)
 
 [![SmartSeat production application walkthrough](docs/media/demo-poster.jpg)](https://9059rohith.github.io/smartseat-ai/)
 
@@ -42,7 +42,7 @@
 
 **[Full MP4 walkthrough â€” approximately 2 minutes 33 seconds](https://github.com/9059Rohith/smartseat-ai/releases/download/v1.0-demo/smartseat-demo.mp4)**
 
-The recording is a browser screencast of [the production deployment](https://smartseat-ai-9059.vercel.app/), captured on 5 November 2026. The screen capture samples approximately two frames per second and is encoded as a standard H.264 MP4. Chapter labels sit below the application; they do not replace application data. There is no synthetic voiceover, fabricated dashboard or seeded restaurant history.
+The recording is a browser screencast of SmartSeat captured on 5 November 2026. The [current working application](https://9059rohith.github.io/smartseat-ai/app/) is separate from this recorded walkthrough. The screen capture samples approximately two frames per second and is encoded as a standard H.264 MP4. Chapter labels sit below the application; they do not replace application data. There is no synthetic voiceover, fabricated dashboard or seeded restaurant history.
 
 | Approximate time | Shown in the actual application |
 | --- | --- |
@@ -152,12 +152,12 @@ Sustained absence after a visit produces a cleaning task. Lost camera evidence i
 
 ```mermaid
 flowchart LR
-  B[Browser: React + Vite] --> G[Vercel Node gateway]
+  B[Browser: React + Vite] --> T[HTTPS connector]
+  T --> R[Loopback router :8767]
+  R --> G[Authenticated Node gateway :8768]
   G --> A[Supabase Auth]
   G --> P[(PostgreSQL: RLS)]
-  G --> T[HTTPS connector]
-  T --> R[Loopback router :8767]
-  R --> E[SmartSeat FastAPI :8766]
+  G --> E[SmartSeat FastAPI :8766]
   E --> D[(Private SQLite)]
   C[Laptop / USB / RTSP camera] --> E
   E --> Y[Local YOLOX + Grounding DINO]
@@ -169,7 +169,7 @@ flowchart LR
 - **This public installation:** dedicated SmartSeat engine on 8766; router on 8767 reserves `/smartseat-engine/*`. Other existing local-app traffic continues to 8765.
 - **Cloud identity/data:** Supabase Auth plus PostgreSQL. Camera/model processing stays on the restaurant computer.
 - **Frames:** kept in memory by the application and delivered through authenticated camera routes. Hosted Postgres does not store camera frames.
-- **Public access:** Vercel serves the UI/gateway; the restaurant engine, connector and laptop must remain running.
+- **Public access:** the loopback Node gateway serves the prefix-built UI/API through the HTTPS connector. The restaurant laptop and services must remain running. The optional legacy Vercel address remains disabled by its team quota.
 
 Local camera inference has no paid inference API, LLM API or per-frame external AI call. Public deployment necessarily uses HTTP APIs for authentication, database access and the connector. Free hosting quotas and policies still apply; the project does not promise unlimited free infrastructure.
 
@@ -303,7 +303,9 @@ Public new-user email signup/confirmation and a completed password-change/email-
 
 ## Public deployment
 
-Live URL: **https://smartseat-ai-9059.vercel.app/**
+Working application: **https://9059rohith.github.io/smartseat-ai/app/**
+
+The full app now runs through the existing HTTPS connector and local Node gateway. See [the public runtime guide](docs/public-runtime.md) for cross-laptop access, Google pairing, startup and operating requirements. The Vercel configuration below remains an optional legacy deployment path and is currently provider-disabled for this team.
 
 The existing installation uses the dedicated engine, loopback router, authenticated public gateway and configured HTTPS connector.
 
@@ -407,7 +409,7 @@ npm.cmd ci --prefix web
 npm.cmd run build --prefix web
 ```
 
-The latest software checkpoint passed **61 Python tests and 25 Node tests**, plus the production web build. Python coverage includes real YOLOX inference on the explicitly labeled upstream test clip, occupancy/service rules, visual evidence freshness, reports, reservations, database safeguards, connector handling, encrypted backups and watchdog boundaries. Node checks include auth/session failures, rate/body bounds and stream interruptions.
+The latest software checkpoint passed **62 Python tests and 31 Node tests**, plus the production web build. Python coverage includes real YOLOX inference on the explicitly labeled upstream test clip, occupancy/service rules, visual evidence freshness, reports, reservations, database safeguards, connector handling, encrypted backups and watchdog boundaries. Node checks include auth/session failures, rate/body bounds and stream interruptions.
 
 The safe live auth probe does not create accounts, send email or insert restaurant records:
 

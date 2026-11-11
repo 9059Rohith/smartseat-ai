@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import time
 
-ISSUES={'engine_offline','router_offline','public_offline','camera_blocked','camera_unavailable','capture_unknown','database_missing','database_unrecognized','unexpected_service'}
+ISSUES={'engine_offline','router_offline','public_offline','gateway_offline','camera_blocked','camera_unavailable','capture_unknown','database_missing','database_unrecognized','unexpected_service'}
 
 def read_status(path, fields):
     try:

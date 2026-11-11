@@ -1,5 +1,7 @@
 # Running the deployed SmartSeat app
 
+**Working full app:** [https://9059rohith.github.io/smartseat-ai/app/](https://9059rohith.github.io/smartseat-ai/app/). See [the public runtime guide](public-runtime.md). The app can be opened on another laptop; keep the restaurant host awake and online.
+
 > **11 November 2026:** Vercel currently returns HTTP 402 / DEPLOYMENT_DISABLED because of the team's Hobby CPU allowance. The public URL below is configured correctly but unavailable while the provider block remains. See [hosting status and working alternatives](hosting-status.md). The local engine and recorded demo remain available.
 
 Live application: https://smartseat-ai-9059.vercel.app/

@@ -9,7 +9,7 @@ try {
     if($Port -eq 0){$Port=if($smartseatConfig.engine_port){[int]$smartseatConfig.engine_port}else{8766}}
     if($smartseatOrigin.Scheme -ne 'https'){throw 'The public engine connector must use HTTPS.'}
     $env:SMARTSEAT_PUBLIC_HOSTS=$smartseatOrigin.Host
-    $env:SMARTSEAT_PUBLIC_ORIGINS=$smartseatConfig.public_origin
+    $env:SMARTSEAT_PUBLIC_ORIGINS=(@($smartseatConfig.public_origin,$smartseatConfig.public_app_origin)|Where-Object {$_}|Select-Object -Unique)-join ','
     Write-Host "Starting the restaurant engine for $($smartseatConfig.public_origin). Keep this computer online."
     & '.\.venv\Scripts\python.exe' app.py --webcam --port $Port
 } finally {Pop-Location}
