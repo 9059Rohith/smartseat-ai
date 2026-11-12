@@ -1,6 +1,7 @@
 """Restore the dedicated path through the running local connector, preserving its other routes."""
 import json
 from pathlib import Path
+import time
 from urllib.parse import urlparse
 import requests
 
@@ -12,8 +13,20 @@ def ensure_connection():
     if origin.scheme != 'https' or origin.path.rstrip('/') != '/smartseat-engine':
         raise RuntimeError('Expected the dedicated HTTPS SmartSeat connector path.')
     api = 'http://127.0.0.1:4040/api'
-    tunnels = requests.get(api + '/tunnels', timeout=10).json()['tunnels']
-    matches = [t for t in tunnels if urlparse(t['public_url']).netloc == origin.netloc]
+    matches = []
+    for attempt in range(20):
+        try:
+            tunnels = requests.get(api + '/tunnels', timeout=2).json()['tunnels']
+        except requests.RequestException as error:
+            if attempt == 19:
+                raise RuntimeError('The ngrok local API did not become available.') from error
+            time.sleep(.5)
+            continue
+        matches = [t for t in tunnels if urlparse(t['public_url']).netloc == origin.netloc]
+        if matches:
+            break
+        if attempt < 19:
+            time.sleep(.5)
     if len(matches) != 1:
         raise RuntimeError('The expected ngrok endpoint is missing or ambiguous. No connector was changed.')
     tunnel = matches[0]
